@@ -13,3 +13,14 @@ Future things :
 And maybe more ! Why not !
 
 Put the folder of the addon in your garry's mod addon's folder (steam\steamapps\common\Garry's mod\garrysmod\addons) for playing with it ( you need to extract it if it is in .zip ) 
+
+----------------------------------------------------------------------
+
+Actuals avaiables commands in terminals : 
+- help
+- commands 
+- query
+- list ( not finished yet, useless )
+
+future commands :
+- ping
