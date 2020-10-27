@@ -14,37 +14,53 @@ end
 --VARs
 
 local TerminalTextsList = {
-
+	
 }
-local TerminalLastUseTextInEntry = ""
+local TerminalTextEntryLastText = ""
+local TerminalTextEntryCanModify = true
 
 --Terminal
 
 net.Receive("OpenTerminal", function(len, ply)
 	local TerminalFrame = vgui.Create("DFrame")
-	TerminalFrame:SetPos(WH(1920/2/1.5),SH(1080/2/1.5))
-	TerminalFrame:SetSize(WH(1920/3),SH(1080/3))
+	TerminalFrame:SetPos(WH(640),SH(365))
+	TerminalFrame:SetSize(WH(640),SH(350))
 	TerminalFrame:SetTitle("")
 	TerminalFrame:ShowCloseButton(true)
 	function TerminalFrame:Paint(w, h)
 		surface.SetDrawColor(Color(0,0,0))
 		surface.DrawRect(0,0,w,h)
+
+		surface.SetDrawColor(Color(100,100,100))
+		surface.DrawRect(0,SH(314),WH(640),SH(2))
+
+		surface.SetFont("HUDHltFontS")
+		surface.SetTextColor(255,255,255,255)
+		
+		for i=1,table.getn(TerminalTextsList),1 do
+			surface.SetTextPos(WH(15),SH(280-(table.getn(TerminalTextsList)-i)*20))
+			surface.DrawText(TerminalTextsList[i])
+		end
 	end
 
 	TerminalFrame:MakePopup()
 	
-	--local PSTBT = vgui.Create("DButton", DK)
-	--PSTBT:SetPos(50, 150)
-	--PSTBT:SetSize(100, 30)
-	--PSTBT:SetText("Pistolet")
-	--PSTBT.DoClick = function()
-    --	net.Start("PSTHL")
-    --	net.SendToServer()
-    --	DK:Close()
-    --	LocalPlayer():ChatPrint("Pistolet HalfLife Choisie")
-	--end
-	--function PSTBT:Paint(w, h)
-	--	draw.RoundedBox(0, 0, 0, w, h, Color(250, 250, 250))
-	--	draw.RoundedBox(0, 1, 1, w-2, h-2, Color(200, 200, 200))
-	--end
+	local TerminalTextEntry = vgui.Create("DTextEntry",TerminalFrame)
+	TerminalTextEntry:SetPos(WH(10),SH(320))
+	TerminalTextEntry:SetSize(WH(620),SH(25))
+	TerminalTextEntry:SetFont("HUDHltFontS")
+	TerminalTextEntry:SetValue(TerminalTextEntryLastText)
+	TerminalTextEntry.OnChange = function(self)
+		if !TerminalTextEntryCanModify then
+			self:SetText("")
+		end
+	end
+	TerminalTextEntry.OnEnter = function(self)
+		TerminalTextsList[table.getn(TerminalTextsList)+1] = ">> "..self:GetValue()
+		self:SetText("")
+	end
+
+	TerminalFrame.OnClose = function(self)
+		TerminalLastTextInEntry = TerminalTextEntry:GetValue()
+	end
 end)
