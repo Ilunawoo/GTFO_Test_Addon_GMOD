@@ -21,6 +21,7 @@ Actuals avaiables commands in terminals :
 - commands 
 - query
 - list ( not finished yet, useless )
+- clear
 
 future commands :
 - ping
