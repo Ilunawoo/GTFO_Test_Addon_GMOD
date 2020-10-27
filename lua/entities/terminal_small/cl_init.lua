@@ -36,7 +36,7 @@ net.Receive("OpenTerminal", function(len, ply)
 
 		surface.SetFont("HUDHltFontS")
 		surface.SetTextColor(255,255,255,255)
-
+		
 		for i=1,table.getn(TerminalTextsList),1 do
 			surface.SetTextPos(WH(15),SH(280-(table.getn(TerminalTextsList)-i)*20))
 			surface.DrawText(TerminalTextsList[i])
