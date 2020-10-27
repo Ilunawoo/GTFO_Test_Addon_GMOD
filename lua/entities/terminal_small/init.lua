@@ -3,6 +3,9 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 util.AddNetworkString("OpenTerminal")
+util.AddNetworkString("TerminalGetNameFromServer")
+
+local ENTName = "TERMINAL"
 
 function ENT:SpawnFunction(ply, tr, classname)
 	if !tr.Hit then return end
@@ -20,3 +23,10 @@ function ENT:Use(act, ply)
         net.Send(ply)
     end
 end
+
+net.Receive("TerminalGetNameFromServer",function(len,ply)
+	net.Start("TerminalGetNameFromServer")
+	net.WriteString(ENTName)
+	net.Send(ply)
+	print(ENTName)
+end)

@@ -13,13 +13,48 @@ end
 
 --VARs
 
+local TerminalVersion = "0.1"
+
 local TerminalTextsList = {
-	
+	"- - - - - - - - - - - - - TERMINAL V"..TerminalVersion.." - - - - - - - - - - - - -",
+	"For a list of all commands, type \"commands\"",
+	"If you need help, type \"help\"",
+	"Welcome !",
+	"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
+	" "
 }
 local TerminalTextEntryLastText = ""
 local TerminalTextEntryCanModify = true
 
---Terminal
+--COMMANDS FUNC & DIC
+
+local CommandsList = {
+	"    - \"help\" : show terminal info",
+	"    - \"commands\" : show a list of all commands",
+	"    - \"cls\" : clear the screen"
+}
+
+local TerminalCommandsFunc = function(command,arg)
+	if command == "commands" then
+		for _,v in pairs(CommandsList) do
+			TerminalTextsList[table.getn(TerminalTextsList)+1] = v
+		end
+		TerminalTextsList[table.getn(TerminalTextsList)+1] = " "
+	elseif command == "help" then 
+		TerminalTextsList[table.getn(TerminalTextsList)+1] = "actual server: "..GetHostName()
+		TerminalTextsList[table.getn(TerminalTextsList)+1] = "status: normal"
+		TerminalTextsList[table.getn(TerminalTextsList)+1] = "version: "..TerminalVersion
+
+		TerminalTextEntryCanModify = false
+		net.Start("TerminalGetNameFromServer")
+		net.SendToServer()
+	else
+		TerminalTextsList[table.getn(TerminalTextsList)+1] = "\""..command.."\" is not recognized as a command!"
+		TerminalTextsList[table.getn(TerminalTextsList)+1] = " "
+	end
+end
+
+--Terminal - NET
 
 net.Receive("OpenTerminal", function(len, ply)
 	local TerminalFrame = vgui.Create("DFrame")
@@ -30,9 +65,6 @@ net.Receive("OpenTerminal", function(len, ply)
 	function TerminalFrame:Paint(w, h)
 		surface.SetDrawColor(Color(0,0,0))
 		surface.DrawRect(0,0,w,h)
-
-		surface.SetDrawColor(Color(100,100,100))
-		surface.DrawRect(0,SH(314),WH(640),SH(2))
 
 		surface.SetFont("HUDHltFontS")
 		surface.SetTextColor(255,255,255,255)
@@ -57,10 +89,32 @@ net.Receive("OpenTerminal", function(len, ply)
 	end
 	TerminalTextEntry.OnEnter = function(self)
 		TerminalTextsList[table.getn(TerminalTextsList)+1] = ">> "..self:GetValue()
+		local CMS1 = ""
+		local ARS2 = ""
+		local k = 1
+		for	v in string.gmatch(string.lower(self:GetValue()),"%S+") do
+			if k == 1 then
+				CMS1 = v
+			elseif k == 2 then
+				ARS2 = v 
+			end
+
+			k = k + 1
+		end
+		TerminalCommandsFunc(CMS1,ARS2)
 		self:SetText("")
 	end
 
 	TerminalFrame.OnClose = function(self)
 		TerminalLastTextInEntry = TerminalTextEntry:GetValue()
 	end
+end)
+
+--TerminalGetNameFromServer - NET
+
+net.Receive("TerminalGetNameFromServer",function(ply)
+	TerminalTextsList[table.getn(TerminalTextsList)+1] = "name: "..net.ReadString()
+	TerminalTextsList[table.getn(TerminalTextsList)+1] = " "
+
+	TerminalTextEntryCanModify = true
 end)
